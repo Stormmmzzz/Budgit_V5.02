@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Budgit — Spend with intention</title>
+<link rel="stylesheet" href="sty.css">
+</head>
+<body>
+<div class="app" id="app">
+  <!-- HOME PAGE -->
+  <div class="page active" id="page-home">
+    <div class="header">
+      <div class="header-left">
+        <div class="avatar" id="user-avatar">B</div>
+        <div>
+          <div class="greeting" id="greeting-text">Welcome back</div>
+          <div class="greeting-name" id="current-date"></div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" onclick="switchTab('settings')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="overview-card fade-in">
+      <div class="overview-top">
+        <div class="overview-title">Spending Overview</div>
+        <div class="period-select" id="period-select" onclick="openMonthPicker()">
+          <span id="period-label">This Month</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+      </div>
+      <div class="overview-amount" id="overview-amount">$0<span class="cents">.00</span></div>
+      <div class="overview-sub" id="overview-sub">per month in recurring subscriptions</div>
+      <div class="overview-stats">
+        <div class="stat-chip" onclick="showActiveSubs()">
+          <div class="stat-num green" id="stat-active">0</div>
+          <div class="stat-label">Active<br>Subscriptions</div>
+          <div class="stat-arrow">›</div>
+        </div>
+        <div class="stat-chip" onclick="showUpcomingBills()">
+          <div class="stat-num orange" id="stat-bills">0</div>
+          <div class="stat-label">Upcoming<br>Bills</div>
+          <div class="stat-arrow">›</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="search-bar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" placeholder="Search subscriptions..." id="home-search" oninput="renderHome()">
+    </div>
+
+    <div class="section" id="upcoming-section">
+      <div class="section-header">
+        <div class="section-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          Upcoming Payments
+        </div>
+        <div class="section-link" onclick="switchTab('subs')">See all</div>
+      </div>
+      <div class="payments-scroll" id="payments-scroll"></div>
+    </div>
+
+    <div class="section" id="tx-section">
+      <div class="section-header">
+        <div class="section-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+          Recent Transactions
+        </div>
+        <div class="section-link" onclick="switchTab('subs')">See all</div>
+      </div>
+      <div class="tx-list" id="tx-list"></div>
+    </div>
+
+    <div class="section" id="month-section">
+      <div class="section-header">
+        <div class="section-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          Monthly Overview
+        </div>
+      </div>
+      <div class="month-chips" id="month-chips"></div>
+    </div>
+
+    <div class="section" id="pending-section" style="display:none">
+      <div class="section-header">
+        <div class="section-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          Pending Decisions
+        </div>
+      </div>
+      <div class="assessment-list" id="pending-list"></div>
+    </div>
+  </div>
+
+  <!-- SUBSCRIPTIONS PAGE -->
+  <div class="page" id="page-subs">
+    <div class="header">
+      <div class="header-left">
+        <div class="greeting-name" style="font-size:22px">My Subscriptions</div>
+      </div>
+    </div>
+
+    <div class="search-bar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" placeholder="Search subscriptions..." id="sub-search" oninput="renderSubs()">
+    </div>
+
+    <div class="sub-list" id="sub-list"></div>
+  </div>
+
+  <!-- DECIDE PAGE -->
+  <div class="page" id="page-decide">
+    <div class="header">
+      <div class="header-left">
+        <div class="greeting-name" style="font-size:22px">Decide</div>
+      </div>
+    </div>
+
+    <div class="decide-hero fade-in">
+      <h2>Think before you buy</h2>
+      <p>Describe what you're considering, answer a few questions, and get a personalised recommendation.</p>
+      <button class="decide-btn" onclick="openDecideWizard()">
+        Start new assessment
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">Recent Assessments</div>
+      </div>
+    </div>
+    <div class="assessment-list" id="assessment-list"></div>
+  </div>
+
+  <!-- INSIGHTS PAGE -->
+  <div class="page" id="page-insights">
+    <div class="header">
+      <div class="header-left">
+        <div class="greeting-name" style="font-size:22px">Stats & Insights</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="insight-card" id="budget-tracker-card">
+        <div class="insight-title">Monthly budget</div>
+        <div id="budget-tracker"></div>
+        <button class="btn btn-secondary" onclick="openBudgetModal()">Adjust budget</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="insight-card">
+        <div class="insight-title">Subscription evaluator</div>
+        <p class="modal-copy">Check whether a subscription is worth keeping based on price and how often you use it.</p>
+        <div id="subscription-evaluator"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="insight-card">
+        <div class="insight-title">Spending by Category</div>
+        <div class="donut-wrap">
+          <div class="donut" id="donut-chart">
+            <div class="donut-center">
+              <div class="donut-amount" id="donut-total">$0</div>
+              <div class="donut-label">per month</div>
+            </div>
+          </div>
+          <div class="legend" id="category-legend"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="insight-card">
+        <div class="insight-title">Confirmed Price Increases</div>
+        <div id="price-increases"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="insight-card">
+        <div class="insight-title">Potential Savings</div>
+        <div id="savings-list"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="insight-card">
+        <div class="insight-title">Purchase Decisions</div>
+        <div id="decision-stats"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SAVINGS PAGE -->
+  <div class="page" id="page-savings">
+    <div class="header"><div class="header-left"><div class="greeting-name" style="font-size:22px">Savings</div><div class="header-sub">Build a habit, one deposit at a time.</div></div></div>
+    <div class="savings-intro"><div class="savings-intro-icon">↗</div><div><h2>Your next goal</h2><p>Set a target or a daily, weekly, or monthly saving habit.</p></div></div>
+    <div class="savings-actions"><button class="btn btn-primary" onclick="openSavingsGoalModal()">＋ New savings goal</button><button class="btn btn-secondary" onclick="openSavingsEntryModal('saved')">＋ Record amount</button></div>
+    <div id="savings-due"></div>
+    <div class="section"><div class="section-header"><div class="section-title">Your goals</div></div><div id="savings-goals" class="savings-goals"></div></div>
+    <div class="section"><div class="section-header"><div class="section-title">Recent activity</div></div><div id="savings-activity" class="savings-activity"></div></div>
+  </div>
+
+  <!-- SETTINGS PAGE -->
+  <div class="page" id="page-settings">
+    <div class="header">
+      <div class="header-left">
+        <div class="greeting-name" style="font-size:22px">Settings</div>
+      </div>
+    </div>
+
+    <div class="settings-list">
+      <div class="settings-item" onclick="openCurrencyModal()">
+        <div class="settings-left">
+          <div class="settings-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
+          </div>
+          <div>
+            <div class="settings-name">Currency</div>
+            <div class="settings-val" id="settings-currency">USD ($)</div>
+          </div>
+        </div>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+      </div>
+
+      <div class="settings-item" onclick="openBudgetModal()">
+        <div class="settings-left">
+          <div class="settings-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
+          </div>
+          <div>
+            <div class="settings-name">Monthly Budget</div>
+            <div class="settings-val" id="settings-budget">Not set</div>
+          </div>
+        </div>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+      </div>
+
+      <div class="settings-item">
+        <div class="settings-left">
+          <div class="settings-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </div>
+          <div>
+            <div class="settings-name">Dark Mode</div>
+          </div>
+        </div>
+        <div class="toggle" id="dark-toggle" onclick="toggleDark()"></div>
+      </div>
+
+      <div class="settings-item" onclick="openOnboarding()">
+        <div class="settings-left">
+          <div class="settings-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </div>
+          <div>
+            <div class="settings-name">About Budgit</div>
+            <div class="settings-val">How it works</div>
+          </div>
+        </div>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+      </div>
+
+      <div class="settings-item" onclick="eraseData()" style="border-color: var(--danger)">
+        <div class="settings-left">
+          <div class="settings-icon" style="background: #fee2e2; color: var(--danger)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          </div>
+          <div>
+            <div class="settings-name" style="color: var(--danger)">Erase all data</div>
+            <div class="settings-val">Clear local storage</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align: center; padding: 20px; color: var(--text3); font-size: 12px;">
+        Budgit v1.0 · Created by Stephan Ngenda<br>Data stored locally in your browser
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom nav -->
+  <div class="bottom-nav">
+    <div class="nav-item active" data-tab="home" onclick="switchTab('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+      <div class="nav-label">Home</div>
+    </div>
+    <div class="nav-item" data-tab="subs" onclick="switchTab('subs')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7.5 12 3l9 4.5v11L12 23l-9-4.5z"/><path d="M3 7.5 12 12l9-4.5M12 12v11"/></svg>
+      <div class="nav-label">Subs</div>
+    </div>
+    <div class="nav-item" data-tab="decide" onclick="switchTab('decide')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v3m0 12v3M3 12h3m12 0h3M5.64 5.64l2.12 2.12m8.48 8.48 2.12 2.12m0-12.72-2.12 2.12m-8.48 8.48-2.12 2.12"/><circle cx="12" cy="12" r="6"/><path d="m10 12 1.4 1.4L14.5 10"/></svg>
+      <div class="nav-label">Decide</div>
+    </div>
+    <div class="nav-item" data-tab="insights" onclick="switchTab('insights')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+      <div class="nav-label">Insights</div>
+    </div>
+    <div class="nav-item" data-tab="savings" onclick="switchTab('savings')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-9"/><path d="M15 6h6v6"/></svg>
+      <div class="nav-label">Savings</div>
+    </div>
+    <div class="nav-item" data-tab="settings" onclick="switchTab('settings')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <div class="nav-label">Settings</div>
+    </div>
+  </div>
+
+  <!-- FAB -->
+  <button class="fab" id="fab" onclick="openAddSub()">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+  </button>
+</div>
+
+<!-- Detail page -->
+<div class="detail-page" id="detail-page">
+  <div class="detail-header" id="detail-header"></div>
+  <div class="detail-body" id="detail-body"></div>
+</div>
+
+<!-- Modal overlay -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal-content" onclick="event.stopPropagation()"></div>
+</div>
+
+<!-- List popup -->
+<div class="list-popup" id="list-popup" onclick="closeListPopup(event)">
+  <div class="list-popup-content" id="list-popup-content" onclick="event.stopPropagation()"></div>
+</div>
+
+<!-- Savings check-in popup: global layer, sits above every tab and modal -->
+<div class="checkin-overlay" id="checkin-overlay" role="dialog" aria-modal="true" aria-label="Savings check-in">
+  <div class="checkin-card" id="checkin-card"></div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+1. When a New Product is added in the decide tab it doesnt create it in the savings folder, as i created HOT1 as a demo it did was not automatically crated in the decide
+
+2. The calender picker in the savings tab still uses a web based calender i want to use this (B-005) type of calender type that we used previusly when users create a subscription to tell when the subscription will be renewed
+
+3. The popup for the daily check in only appears in the savings folder, i wiuld rater it be a popup that greys out whatever is under it and for it to appear above everything and when it hits the timer it pops up no matter what tab your on
+
+4. i would also like for the clock to not be web based but instead made directly in the apps ui
